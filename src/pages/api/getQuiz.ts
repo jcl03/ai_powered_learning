@@ -1,12 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import OpenAI from 'openai';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || '',
-});
+import {
+    createThread,
+    addMessageToThread,
+    runAssistant,
+    waitForRunCompletion,
+    retrieveAssistantMessages,
+} from '../../utils/openAIHelper';
 
 // Store active threads in memory (consider using a proper database in production)
 const activeThreads = new Map();
@@ -39,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         let thread;
-        
+        let inputMessage;
+
         if (action === 'getFeedback') {
             const threadId = req.body.threadId;
             if (!threadId || !activeThreads.has(threadId)) {
@@ -51,19 +51,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 q.selectedAnswer !== q.correctAnswer
             );
 
-            const feedbackMessage = formatFeedbackPrompt(wrongAnswers);
-
-            await openai.beta.threads.messages.create(thread.id, {
-                role: 'user',
-                content: feedbackMessage,
-            });
-
+            inputMessage = formatFeedbackPrompt(wrongAnswers);
         } else {
             // Create new thread for quiz generation
-            thread = await openai.beta.threads.create();
+            thread = await createThread();
             activeThreads.set(thread.id, true);
 
-            const quizMessage = `Please analyze the content from the file search (vector id: vs_TFos1XswweiI4rdUGQ9byQ7R) 
+            inputMessage = `Please analyze the content from the file search (vector id: vs_TFos1XswweiI4rdUGQ9byQ7R) 
             and generate 5 multiple-choice questions about the content.
             Each question should have 4 options (A, B, C, D) with one correct answer.
             Format the response as a JSON array of questions.
@@ -83,46 +77,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
               ]
             }`;
-
-            await openai.beta.threads.messages.create(thread.id, {
-                role: 'user',
-                content: quizMessage,
-            });
         }
 
-        const run = await openai.beta.threads.runs.create(thread.id, {
-            assistant_id: process.env.ASSISTANT_ID_1 || '',
-        });
+        // Add the user message to the thread
+        await addMessageToThread(thread.id, inputMessage);
 
-        let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-        while (runStatus.status !== 'completed') {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-        }
+        // Run the assistant on the thread
+        const run = await runAssistant(thread.id);
 
-        const messages = await openai.beta.threads.messages.list(thread.id);
-        let assistantMessage = messages.data.find(msg => msg.role === 'assistant')?.content[0].text.value || '';
+        // Wait for the run to complete
+        await waitForRunCompletion(thread.id, run.id);
 
-        // Clean up markdown symbols
+        // Retrieve the assistant's messages
+        const assistantMessage = await retrieveAssistantMessages(thread.id);
+        const messageContent = assistantMessage?.content[0].text.value || '';
+
         if (action === 'getFeedback') {
-            // Remove markdown symbols and clean up the text
-            assistantMessage = assistantMessage
+            // Clean up markdown symbols for feedback
+            const feedback = messageContent
                 .replace(/\*\*/g, '') // Remove bold markers
                 .replace(/###/g, '') // Remove heading markers
                 .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newlines
                 .trim(); // Remove extra whitespace
 
-            return res.status(200).json({ feedback: assistantMessage });
+            return res.status(200).json({ feedback });
         } else {
             try {
-                const parsedQuestions = JSON.parse(assistantMessage);
+                // Attempt to parse the assistant's response as JSON
+                const parsedQuestions = JSON.parse(messageContent);
                 return res.status(200).json({ 
                     ...parsedQuestions, 
                     threadId: thread.id 
                 });
             } catch (parseError) {
                 console.error('Error parsing questions:', parseError);
-                return res.status(500).json({ error: 'Invalid question format received' });
+                console.error('Assistant response:', messageContent);
+
+                // If parsing fails, return an error with the assistant's raw response
+                return res.status(500).json({ 
+                    error: 'Invalid question format received',
+                    assistantResponse: messageContent, // Include the raw response for debugging
+                });
             }
         }
 
