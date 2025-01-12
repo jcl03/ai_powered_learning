@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react"; // Import useEffect
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Text,
@@ -16,7 +16,7 @@ import {
 
 export default function FlashcardsPage() {
   const [flashcards, setFlashcards] = useState([]);
-  const [topic, setTopic] = useState("."); // Preset topic
+  const [topic, setTopic] = useState("artificial intelligence"); // Preset topic
   const [loading, setLoading] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(-1); // Tracks the current flashcard index
   const [revealedCards, setRevealedCards] = useState([]); // Stores previously viewed flashcards
@@ -149,15 +149,6 @@ export default function FlashcardsPage() {
             minHeight="200px"
             position="relative"
           >
-            <Text
-              fontSize="lg"
-              fontWeight="bold"
-              mb={4}
-              position="absolute"
-              top="4"
-              left="4"
-            >
-            </Text>
             {loading ? (
               <Flex alignItems="center" justifyContent="center" height="100%">
                 <Text fontSize="md" color="gray.600">
@@ -182,10 +173,10 @@ export default function FlashcardsPage() {
                   onClick={handleCardClick}
                 >
                   <Text fontSize="xl" fontWeight="medium" mb={3}>
-                    {flashcards[currentCardIndex].question}
+                    {flashcards[currentCardIndex].question || "Keyword"}
                   </Text>
                   <Text fontSize="md" color="gray.700">
-                    {flashcards[currentCardIndex].answer}
+                    {flashcards[currentCardIndex].answer || "Definition"}
                   </Text>
                 </Box>
               </ScaleFade>
@@ -230,10 +221,10 @@ export default function FlashcardsPage() {
                   borderColor="gray.200"
                 >
                   <Text fontSize="md" fontWeight="medium" mb={2}>
-                    {card.question}
+                    {card.question || "Keyword"}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
-                    {card.answer}
+                    {card.answer || "Definition"}
                   </Text>
                 </Box>
               ))}

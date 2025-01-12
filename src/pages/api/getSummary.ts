@@ -1,25 +1,13 @@
 // api/getSummary.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import OpenAI from 'openai';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-if (!process.env.OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY is not set');
-}
-
-if (!process.env.ASSISTANT_ID_1) {
-    console.error('ASSISTANT_ID_1 is not set');
-}
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || '',
-});
-
-// Load assistant
-const assistantId = process.env.ASSISTANT_ID_1 || '';
+import {
+    createThread,
+    addMessageToThread,
+    runAssistant,
+    waitForRunCompletion,
+    retrieveAssistantMessages,
+} from '../../utils/openAIHelper';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
@@ -35,34 +23,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         // Create a new thread
         console.log('Creating new thread for summary');
-        const thread = await openai.beta.threads.create();
+        const thread = await createThread();
 
         // Add the user message (request for summary) to the thread
         const inputMessage = `Please provide a concise and comprehensive summary of the topic: "${topic}". The summary should cover the key points and provide a clear understanding of the subject.`;
         console.log('Adding message to thread:', inputMessage);
-        await openai.beta.threads.messages.create(thread.id, {
-            role: 'user',
-            content: inputMessage,
-        });
+        await addMessageToThread(thread.id, inputMessage);
 
         // Run the assistant on the thread
-        console.log('Starting assistant run with ID:', assistantId);
-        const run = await openai.beta.threads.runs.create(thread.id, {
-            assistant_id: assistantId,
-        });
+        console.log('Starting assistant run');
+        const run = await runAssistant(thread.id);
 
         // Wait for the run to complete
-        let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-        while (runStatus.status !== 'completed') {
-            console.log('Run status:', runStatus.status);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-        }
+        await waitForRunCompletion(thread.id, run.id);
 
         // Retrieve the assistant's messages
         console.log('Retrieving assistant messages for summary');
-        const messages = await openai.beta.threads.messages.list(thread.id);
-        const assistantMessage = messages.data.find(msg => msg.role === 'assistant');
+        const assistantMessage = await retrieveAssistantMessages(thread.id);
         console.log('Assistant message:', assistantMessage);
 
         const summary = assistantMessage?.content[0].text.value || '';

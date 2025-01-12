@@ -1,37 +1,38 @@
+// api/getFlashcards.ts
+
 import { NextApiRequest, NextApiResponse } from 'next';
-import OpenAI from 'openai';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-if (!process.env.OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY is not set');
-}
-
-if (!process.env.ASSISTANT_ID_1) {
-    console.error('ASSISTANT_ID_1 is not set');
-}
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY || '',
-});
-
-// Load assistant
-const assistantId = process.env.ASSISTANT_ID_1 || '';
+import {
+    createThread,
+    addMessageToThread,
+    runAssistant,
+    waitForRunCompletion,
+    retrieveAssistantMessages,
+} from '../../utils/openAIHelper';
 
 const parseFlashcards = (content: string) => {
     try {
+        // Split the content into individual flashcards
         const flashcards = content.split('\n').map((line) => {
-            const [question, answer] = line.split(':');
-            if (question && answer) {
-                return {
-                    question: question.trim(),
-                    answer: answer.trim(),
-                };
-            }
-            return null;
+            // Remove any leading/trailing whitespace
+            line = line.trim();
+
+            // If the line is empty, skip it
+            if (!line) return null;
+
+            // Split the line into "question" and "answer" based on the first colon
+            const [question, answer] = line.split(':').map((part) => part.trim());
+
+            // If either the question or answer is missing, skip this line
+            if (!question || !answer) return null;
+
+            return {
+                question,
+                answer,
+            };
         });
-        return flashcards.filter(Boolean); // Remove null entries
+
+        // Filter out any null entries (invalid flashcards)
+        return flashcards.filter(Boolean);
     } catch (error) {
         console.log('Error parsing flashcards:', error);
         return [];
@@ -51,37 +52,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         // Create a new thread
-        console.log('Creating new thread');
-        const thread = await openai.beta.threads.create();
+        console.log('Creating new thread for flashcards');
+        const thread = await createThread();
 
         // Add the user message (request for flashcards) to the thread
-        const inputMessage = `Generate multiple flashcards for vs_TFos1XswweiI4rdUGQ9byQ7R  the flashcard shall be a keyword or important point of the topic to build first knowledge of the topic. It shall be something for student to rember and build first impression`;
+        const inputMessage = `Generate multiple flashcards for all important concept in vs_TFos1XswweiI4rdUGQ9byQ7R. The flashcard shall be a keyword or important point of the topic to build first knowledge of the topic. It shall be something for students to remember and build a first impression. The response shall be in the format: "keyword:definition" or "question:answer".`;
         console.log('Adding message to thread:', inputMessage);
-        await openai.beta.threads.messages.create(thread.id, {
-            role: 'user',
-            content: inputMessage,
-        });
+        await addMessageToThread(thread.id, inputMessage);
 
         // Run the assistant on the thread
-        console.log('Starting assistant run with ID:', assistantId);
-        const run = await openai.beta.threads.runs.create(thread.id, {
-            assistant_id: assistantId,
-        });
+        console.log('Starting assistant run');
+        const run = await runAssistant(thread.id);
 
         // Wait for the run to complete
-        let runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-        while (runStatus.status !== 'completed') {
-            console.log('Run status:', runStatus.status);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            runStatus = await openai.beta.threads.runs.retrieve(thread.id, run.id);
-        }
+        await waitForRunCompletion(thread.id, run.id);
 
         // Retrieve the assistant's messages
-        console.log('Retrieving assistant messages');
-        const messages = await openai.beta.threads.messages.list(thread.id);
-        const assistantMessage = messages.data.find(msg => msg.role === 'assistant');
+        console.log('Retrieving assistant messages for flashcards');
+        const assistantMessage = await retrieveAssistantMessages(thread.id);
         console.log('Assistant message:', assistantMessage);
 
+        // Parse the flashcards from the assistant's response
         const flashcards = parseFlashcards(assistantMessage?.content[0].text.value || '');
         console.log('Parsed flashcards:', flashcards);
 
