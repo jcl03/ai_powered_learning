@@ -242,7 +242,7 @@ export default function QuizPage() {
   return (
     <Box p={6}>
       <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
-        File Content Quiz
+        Quiz
       </Text>
       <VStack spacing={6} align="center" w="100%">
         <Box w="100%" maxW="600px">

@@ -133,7 +133,7 @@ export default function FlashcardsPage() {
             w="100%"
             isDisabled={loading}
           >
-            {loading ? <Spinner size="sm" /> : "Generate Flashcards"}
+            {loading ? <Spinner size="sm" /> : "Flashcards"}
           </Button>
         </Box>
 

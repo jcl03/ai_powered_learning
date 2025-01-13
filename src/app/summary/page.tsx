@@ -85,7 +85,7 @@ export default function SummaryPage() {
   return (
     <Box p={6}>
       <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
-        Generate Summary
+        Summary
       </Text>
       <VStack spacing={6} align="center" w="100%">
         {/* Input Section */}

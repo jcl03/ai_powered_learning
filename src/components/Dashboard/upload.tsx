@@ -16,7 +16,7 @@ export default function FileUploadPanel() {
     if (files.length > 0) {
       console.log("Uploaded files:", files);
       // Redirect to /note
-      router.push("/flashcards");
+      router.push("/note");
     } else {
       console.warn("No files selected.");
     }

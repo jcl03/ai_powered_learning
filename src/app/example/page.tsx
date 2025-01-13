@@ -10,6 +10,11 @@ import {
   useToast,
   Flex,
   Input,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
 } from "@chakra-ui/react";
 
 export default function ExamplePage() {
@@ -195,11 +200,25 @@ export default function ExamplePage() {
                     Clear All
                   </Button>
                 </Flex>
-                {completedSteps.map((step, index) => (
-                  <Text key={index} fontSize="md" color="gray.700" mb={2}>
-                    {renderStepContent(step)}
-                  </Text>
-                ))}
+                <Accordion allowToggle>
+                  {completedSteps.map((step, index) => (
+                    <AccordionItem key={index}>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">
+                          <Text fontSize="md" color="gray.700">
+                            Step {index + 1}
+                          </Text>
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel pb={4}>
+                        <Text fontSize="md" color="gray.700">
+                          {renderStepContent(step)}
+                        </Text>
+                      </AccordionPanel>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
               </Box>
             )}
           </VStack>

@@ -103,8 +103,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(200).json({ feedback });
         } else {
             try {
-                // Attempt to parse the assistant's response as JSON
-                const parsedQuestions = JSON.parse(messageContent);
+                let jsonString = messageContent;
+
+                // Check if the response contains a JSON block enclosed in triple backticks
+                const jsonMatch = messageContent.match(/```json\n([\s\S]*?)\n```/);
+                if (jsonMatch && jsonMatch[1]) {
+                    jsonString = jsonMatch[1]; // Extract JSON from the block
+                }
+
+                // Attempt to parse the JSON
+                const parsedQuestions = JSON.parse(jsonString);
                 return res.status(200).json({ 
                     ...parsedQuestions, 
                     threadId: thread.id 
