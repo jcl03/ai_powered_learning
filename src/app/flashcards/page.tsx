@@ -13,6 +13,7 @@ import {
   useToast,
   Flex,
 } from "@chakra-ui/react";
+import { FaLightbulb, FaQuestionCircle, FaBook, FaArrowRight } from "react-icons/fa"; // Import FontAwesome icons
 
 export default function FlashcardsPage() {
   const [flashcards, setFlashcards] = useState([]);
@@ -115,7 +116,7 @@ export default function FlashcardsPage() {
   return (
     <Box p={6}>
       <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
-        Generate Flashcards
+        Flashcards
       </Text>
       <VStack spacing={6} align="center" w="100%">
         {/* Input Section */}
@@ -132,8 +133,9 @@ export default function FlashcardsPage() {
             colorScheme="teal"
             w="100%"
             isDisabled={loading}
+            leftIcon={<FaLightbulb />} // Add icon to the button
           >
-            {loading ? <Spinner size="sm" /> : "Flashcards"}
+            {loading ? <Spinner size="sm" /> : "Generate Flashcards"}
           </Button>
         </Box>
 
@@ -173,9 +175,11 @@ export default function FlashcardsPage() {
                   onClick={handleCardClick}
                 >
                   <Text fontSize="xl" fontWeight="medium" mb={3}>
+                    <FaQuestionCircle style={{ marginRight: "8px" }} /> {/* Add icon */}
                     {flashcards[currentCardIndex].question || "Keyword"}
                   </Text>
                   <Text fontSize="md" color="gray.700">
+                    <FaBook style={{ marginRight: "8px" }} /> {/* Add icon */}
                     {flashcards[currentCardIndex].answer || "Definition"}
                   </Text>
                 </Box>
@@ -221,9 +225,11 @@ export default function FlashcardsPage() {
                   borderColor="gray.200"
                 >
                   <Text fontSize="md" fontWeight="medium" mb={2}>
+                    <FaQuestionCircle style={{ marginRight: "8px" }} /> {/* Add icon */}
                     {card.question || "Keyword"}
                   </Text>
                   <Text fontSize="sm" color="gray.600">
+                    <FaBook style={{ marginRight: "8px" }} /> {/* Add icon */}
                     {card.answer || "Definition"}
                   </Text>
                 </Box>

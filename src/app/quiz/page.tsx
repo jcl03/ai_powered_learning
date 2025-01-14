@@ -10,6 +10,7 @@ import {
   useToast,
   Flex,
 } from "@chakra-ui/react";
+import { FaQuestionCircle, FaCheck, FaTimes, FaArrowLeft, FaArrowRight, FaSync, FaLightbulb, FaClipboardCheck } from "react-icons/fa"; // Import FontAwesome icons
 
 export default function QuizPage() {
   const [questions, setQuestions] = useState([]);
@@ -251,6 +252,7 @@ export default function QuizPage() {
             colorScheme="teal"
             w="100%"
             isDisabled={loading}
+            leftIcon={<FaLightbulb />} // Add icon to the button
           >
             {loading ? <Spinner size="sm" /> : "Generate Quiz"}
           </Button>
@@ -267,6 +269,7 @@ export default function QuizPage() {
             {showCurrentSection && (
               <Box w="100%" bg="gray.100" p={6} rounded="md" boxShadow="md">
                 <Text fontSize="lg" fontWeight="bold" mb={4}>
+                  <FaQuestionCircle style={{ marginRight: "8px" }} /> {/* Add icon */}
                   Question {currentQuestion + 1}:
                 </Text>
                 <Text fontSize="md" color="gray.700" mb={4}>
@@ -284,6 +287,7 @@ export default function QuizPage() {
                       py={2}
                       whiteSpace="normal"
                       textAlign="left"
+                      leftIcon={selectedAnswers[currentQuestion] === key ? <FaCheck /> : <FaTimes />} // Add icons
                     >
                       <Text>
                         <strong>{key}:</strong> {value}
@@ -295,15 +299,16 @@ export default function QuizPage() {
                   <Button
                     onClick={handlePreviousQuestion}
                     isDisabled={currentQuestion === 0}
+                    leftIcon={<FaArrowLeft />} // Add icon
                   >
                     Previous
                   </Button>
                   {currentQuestion === questions.length - 1 ? (
-                    <Button onClick={handleNextQuestion} colorScheme="green">
+                    <Button onClick={handleNextQuestion} colorScheme="green" leftIcon={<FaClipboardCheck />}>
                       Finish
                     </Button>
                   ) : (
-                    <Button onClick={handleNextQuestion} colorScheme="blue">
+                    <Button onClick={handleNextQuestion} colorScheme="blue" leftIcon={<FaArrowRight />}>
                       Next
                     </Button>
                   )}
@@ -320,6 +325,7 @@ export default function QuizPage() {
                     size="sm" 
                     colorScheme="red" 
                     onClick={handleClear}
+                    leftIcon={<FaSync />} // Add icon
                   >
                     Clear All
                   </Button>
@@ -330,6 +336,7 @@ export default function QuizPage() {
                       {q.question}
                     </Text>
                     <Text fontSize="sm" color={q.selectedAnswer === q.correctAnswer ? "green.500" : "red.500"}>
+                      {q.selectedAnswer === q.correctAnswer ? <FaCheck style={{ marginRight: "8px" }} /> : <FaTimes style={{ marginRight: "8px" }} />} {/* Add icons */}
                       Your answer: {q.options[q.selectedAnswer]} 
                       {showResults && q.selectedAnswer !== q.correctAnswer && 
                         ` (Correct: ${q.options[q.correctAnswer]})`
@@ -347,6 +354,7 @@ export default function QuizPage() {
                       w="100%"
                       isLoading={loadingFeedback}
                       loadingText="Generating Feedback"
+                      leftIcon={<FaClipboardCheck />} // Add icon
                     >
                       Get Detailed Feedback
                     </Button>

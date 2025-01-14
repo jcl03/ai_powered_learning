@@ -1,5 +1,3 @@
-// page.tsx
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -11,7 +9,9 @@ import {
   Spinner,
   useToast,
   Flex,
+  Icon,
 } from "@chakra-ui/react";
+import { FaPlay, FaFileAlt } from "react-icons/fa"; // Import icons
 
 export default function SummaryPage() {
   const [summary, setSummary] = useState<string>("");
@@ -35,7 +35,8 @@ export default function SummaryPage() {
     setSummary(""); // Clear previous summary
 
     try {
-      const response = await fetch("/api/getSummary", { // Updated endpoint
+      const response = await fetch("/api/getSummary", {
+        // Updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,10 +78,10 @@ export default function SummaryPage() {
     }
   };
 
-//   // Automatically fetch summary when the page loads
-//   useEffect(() => {
-//     fetchSummary();
-//   }, []); // Empty dependency array means this runs only once on mount
+  //   // Automatically fetch summary when the page loads
+  //   useEffect(() => {
+  //     fetchSummary();
+  //   }, []); // Empty dependency array means this runs only once on mount
 
   return (
     <Box p={6}>
@@ -96,6 +97,7 @@ export default function SummaryPage() {
             colorScheme="teal"
             w="100%"
             isDisabled={loading}
+            leftIcon={<Icon as={FaPlay} />} // Add icon to the button
           >
             {loading ? <Spinner size="sm" /> : "Generate Summary"}
           </Button>
@@ -117,9 +119,12 @@ export default function SummaryPage() {
             rounded="md"
             boxShadow="md"
           >
-            <Text fontSize="lg" fontWeight="bold" mb={4}>
-              Summary:
-            </Text>
+            <Flex alignItems="center" mb={4}>
+              <Icon as={FaFileAlt} mr={2} /> {/* Add icon to the summary section */}
+              <Text fontSize="lg" fontWeight="bold">
+                Summary:
+              </Text>
+            </Flex>
             <Text fontSize="md" color="gray.700">
               {summary}
             </Text>

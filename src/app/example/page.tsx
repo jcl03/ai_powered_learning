@@ -15,7 +15,9 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Icon,
 } from "@chakra-ui/react";
+import { FaPlay, FaArrowLeft, FaArrowRight, FaCheck, FaTrash } from "react-icons/fa";
 
 export default function ExamplePage() {
   const [example, setExample] = useState("");
@@ -132,7 +134,7 @@ export default function ExamplePage() {
   return (
     <Box p={6}>
       <Text fontSize="2xl" fontWeight="bold" mb={6} textAlign="center">
-        Generate Example
+        Example
       </Text>
       <VStack spacing={6} align="center" w="100%">
         <Box w="100%" maxW="600px">
@@ -149,6 +151,7 @@ export default function ExamplePage() {
             w="100%"
             isDisabled={loading}
             size="lg"
+            leftIcon={<Icon as={FaPlay} />}
           >
             {loading ? <Spinner size="sm" /> : "Generate Example"}
           </Button>
@@ -173,12 +176,14 @@ export default function ExamplePage() {
                     onClick={handlePreviousStep}
                     isDisabled={currentStep === 0}
                     colorScheme="gray"
+                    leftIcon={<Icon as={FaArrowLeft} />}
                   >
                     Previous
                   </Button>
                   <Button
                     onClick={handleNextStep}
                     colorScheme="blue"
+                    rightIcon={<Icon as={currentStep === steps.length - 1 ? FaCheck : FaArrowRight} />}
                   >
                     {currentStep === steps.length - 1 ? "Finish" : "Next"}
                   </Button>
@@ -196,6 +201,7 @@ export default function ExamplePage() {
                     size="sm" 
                     colorScheme="red" 
                     onClick={handleClear}
+                    leftIcon={<Icon as={FaTrash} />}
                   >
                     Clear All
                   </Button>

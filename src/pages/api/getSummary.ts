@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Add the user message (request for summary) to the thread
         // const inputMessage = `Please provide a concise and comprehensive summary of the topic: "${topic}". The summary should cover the key points and provide a clear understanding of the subject.`;
-        const inputMessage = `Please provide a concise and comprehensive summary from the file search (vector id: vs_TFos1XswweiI4rdUGQ9byQ7R) . The summary should cover the key points and provide a clear understanding of the subject.`;
+        const inputMessage = `Please provide a concise and comprehensive summary from the file search (vector id: vs_TFos1XswweiI4rdUGQ9byQ7R) . The summary should cover the key points and provide a clear understanding of the subject. the response shall directly start with summary, do not start with 'The file with vector ID vs_TFos1XswweiI4rdUGQ9byQ7R contains information...  DO NOT REMENTION THE FILE or VECTOR ID`;
         
         console.log('Adding message to thread:', inputMessage);
         await addMessageToThread(thread.id, inputMessage);

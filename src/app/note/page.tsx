@@ -2,54 +2,150 @@
 
 'use client'; // Mark this component as a Client Component
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Flex, Box } from '@chakra-ui/react';
-import Flashcards from '../flashcards/page'; // Import the flashcards component
-import Quiz from '../quiz/page'; // Import the quizs component
-import Example from '../example/page'; // Import the example component
-import Summary from '../summary/page'; // Import the summary component
+import {
+  Flex,
+  Box,
+  Button,
+  VStack,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
+import Flashcards from '../flashcards/page'; // Import the Flashcards component
+import Quiz from '../quiz/page'; // Import the Quiz component
+import Example from '../example/page'; // Import the Example component
+import Summary from '../summary/page'; // Import the Summary component
+import { FaHome, FaQuestionCircle, FaLightbulb, FaBook, FaFileAlt } from 'react-icons/fa'; // Import FontAwesome icons
+
+// Define the type for module selection, including 'Home'
+type ModuleType = 'Home' | 'Flashcards' | 'Quiz' | 'Example' | 'Summary';
 
 export default function NotePage() {
   const [isClient, setIsClient] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<ModuleType>('Quiz');
 
   useEffect(() => {
     setIsClient(true); // Set isClient to true after the component mounts on the client
   }, []);
 
+  // Function to render the selected module
+  const renderModule = () => {
+    const router = useRouter();
+    switch (selectedModule) {
+      case 'Home':
+        // Return the Home page
+        router.push('/'); // Redirect to the home page
+        return null;
+      case 'Flashcards':
+        return <Flashcards />;
+      case 'Quiz':
+        return <Quiz />;
+      case 'Example':
+        return <Example />;
+      case 'Summary':
+        return <Summary />;
+      default:
+        return <Text>Module not found</Text>;
+    }
+  };
+
   return (
     <Flex width="100%" height="100vh">
-      {/* PDF Viewer (75% of the page width) */}
-      <Box flex="75%" position="relative">
-        {isClient ? (
-          <iframe
-            src="/pdfs/note.pdf"
-            width="100%"
-            height="100%"
-            style={{ border: 'none' }}
-          >
-            <p>Your browser does not support PDFs. Please download the PDF to view it: 
-              <a href="/pdfs/note.pdf">Download PDF</a>.
-            </p>
-          </iframe>
-        ) : (
-          <p>Loading PDF viewer...</p> // Fallback content during SSR
-        )}
-      </Box>
-
-      {/* Modules (25% of the page width) */}
+      {/* Sidebar (15% of the page width) */}
       <Box
-        flex="25%"
-        bg="gray.100"
+        width="15%"
+        bg="gray.200"
         p={4}
         overflowY="auto" // Enable vertical scrolling if content overflows
-        width="25%" // Fixed width to prevent expansion
-        minWidth="300px" // Minimum width to ensure readability
+        minWidth="200px" // Minimum width to ensure readability
+        borderRight="1px"
+        borderColor="gray.300"
       >
-        {/* <Flashcards /> */}
-        {/* <Quiz /> */}
-        <Example />
-        {/* <Summary /> */}
+        {/* Sidebar Navigation */}
+        <VStack spacing={4} align="stretch">
+          <Heading size="md" mb={4} textAlign="center">
+            AI powered LMS
+          </Heading>
+          <Button
+            leftIcon={<FaHome />}
+            colorScheme={selectedModule === 'Home' ? 'teal' : 'gray'}
+            onClick={() => setSelectedModule('Home')}
+            width="100%" // Ensure the button takes full width for consistency
+          >
+            Home
+          </Button>
+          <Button
+            leftIcon={<FaQuestionCircle />}
+            colorScheme={selectedModule === 'Flashcards' ? 'teal' : 'gray'}
+            onClick={() => setSelectedModule('Flashcards')}
+          >
+            Flashcards
+          </Button>
+          <Button
+            leftIcon={<FaLightbulb />}
+            colorScheme={selectedModule === 'Quiz' ? 'teal' : 'gray'}
+            onClick={() => setSelectedModule('Quiz')}
+          >
+            Quiz
+          </Button>
+          <Button
+            leftIcon={<FaBook />}
+            colorScheme={selectedModule === 'Example' ? 'teal' : 'gray'}
+            onClick={() => setSelectedModule('Example')}
+          >
+            Example
+          </Button>
+          <Button
+            leftIcon={<FaFileAlt />}
+            colorScheme={selectedModule === 'Summary' ? 'teal' : 'gray'}
+            onClick={() => setSelectedModule('Summary')}
+          >
+            Summary
+          </Button>
+        </VStack>
       </Box>
+
+      {/* Main Content Area (85% of the page width) */}
+      <Flex width="85%" direction="row">
+        {/* PDF Viewer (75% of Main Content) */}
+        <Box width="75%" position="relative">
+          {isClient ? (
+            <iframe
+              src="/pdfs/note.pdf"
+              width="100%"
+              height="100%"
+              style={{ border: 'none' }}
+            >
+              <p>
+                Your browser does not support PDFs. Please download the PDF to view it:{' '}
+                <a href="/pdfs/note.pdf">Download PDF</a>.
+              </p>
+            </iframe>
+          ) : (
+            <Flex
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              height="100%"
+            >
+              <Text>Loading PDF viewer...</Text> {/* Fallback content during SSR */}
+            </Flex>
+          )}
+        </Box>
+        {/* Module Box (25% of Main Content) */}
+        <Box
+          width="30%"
+          bg="gray.100"
+          p={4}
+          overflowY="auto" // Enable vertical scrolling if content overflows
+          minWidth="250px" // Minimum width to ensure readability
+          borderRight="1px"
+          borderColor="gray.300"
+        >
+          {renderModule()}
+        </Box>
+      </Flex>
     </Flex>
   );
 }
