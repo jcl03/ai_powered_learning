@@ -7,6 +7,7 @@ import FileUploadPanel from "../components/Dashboard/upload";
 
 export default function Home() {
   return (
+    
     <DefaultLayout>
       <div className="container mx-auto py-10">
         <div className="grid grid-cols-4 gap-3">

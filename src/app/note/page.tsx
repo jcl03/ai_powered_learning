@@ -51,101 +51,125 @@ export default function NotePage() {
   };
 
   return (
-    <Flex width="100%" height="100vh">
-      {/* Sidebar (15% of the page width) */}
+    <Flex width="100%" height="100vh" direction="column">
+      {/* Header */}
       <Box
-        width="15%"
-        bg="gray.200"
+        width="100%"
+        bgGradient="linear(to-r, teal.500, blue.500)"
         p={4}
-        overflowY="auto" // Enable vertical scrolling if content overflows
-        minWidth="200px" // Minimum width to ensure readability
-        borderRight="1px"
-        borderColor="gray.300"
+        textAlign="center"
       >
-        {/* Sidebar Navigation */}
-        <VStack spacing={4} align="stretch">
-          <Heading size="md" mb={4} textAlign="center">
-            AI powered LMS
-          </Heading>
-          <Button
-            leftIcon={<FaHome />}
-            colorScheme={selectedModule === 'Home' ? 'teal' : 'gray'}
-            onClick={() => setSelectedModule('Home')}
-            width="100%" // Ensure the button takes full width for consistency
-          >
-            Home
-          </Button>
-          <Button
-            leftIcon={<FaQuestionCircle />}
-            colorScheme={selectedModule === 'Flashcards' ? 'teal' : 'gray'}
-            onClick={() => setSelectedModule('Flashcards')}
-          >
-            Flashcards
-          </Button>
-          <Button
-            leftIcon={<FaLightbulb />}
-            colorScheme={selectedModule === 'Quiz' ? 'teal' : 'gray'}
-            onClick={() => setSelectedModule('Quiz')}
-          >
-            Quiz
-          </Button>
-          <Button
-            leftIcon={<FaBook />}
-            colorScheme={selectedModule === 'Example' ? 'teal' : 'gray'}
-            onClick={() => setSelectedModule('Example')}
-          >
-            Example
-          </Button>
-          <Button
-            leftIcon={<FaFileAlt />}
-            colorScheme={selectedModule === 'Summary' ? 'teal' : 'gray'}
-            onClick={() => setSelectedModule('Summary')}
-          >
-            Summary
-          </Button>
-        </VStack>
+        <Heading size="lg">AI Powered Learning Management System</Heading>
       </Box>
 
-      {/* Main Content Area (85% of the page width) */}
-      <Flex width="85%" direction="row">
-        {/* PDF Viewer (75% of Main Content) */}
-        <Box width="75%" position="relative">
-          {isClient ? (
-            <iframe
-              src="/pdfs/note.pdf"
-              width="100%"
-              height="100%"
-              style={{ border: 'none' }}
-            >
-              <p>
-                Your browser does not support PDFs. Please download the PDF to view it:{' '}
-                <a href="/pdfs/note.pdf">Download PDF</a>.
-              </p>
-            </iframe>
-          ) : (
-            <Flex
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              height="100%"
-            >
-              <Text>Loading PDF viewer...</Text> {/* Fallback content during SSR */}
-            </Flex>
-          )}
-        </Box>
-        {/* Module Box (25% of Main Content) */}
+      {/* Main Content */}
+      <Flex width="100%" height="calc(100vh - 120px)" direction="row">
+        {/* Sidebar (15% of the page width) */}
         <Box
-          width="30%"
-          bg="gray.100"
+          width="15%"
+          bg="gray.200"
           p={4}
           overflowY="auto" // Enable vertical scrolling if content overflows
-          minWidth="250px" // Minimum width to ensure readability
+          minWidth="200px" // Minimum width to ensure readability
           borderRight="1px"
           borderColor="gray.300"
         >
-          {renderModule()}
+          {/* Sidebar Navigation */}
+          <VStack spacing={4} align="stretch">
+            <Heading size="md" mb={4} textAlign="center">
+              AI powered LMS
+            </Heading>
+            <Button
+              leftIcon={<FaHome />}
+              colorScheme={selectedModule === 'Home' ? 'teal' : 'gray'}
+              onClick={() => setSelectedModule('Home')}
+              width="100%" // Ensure the button takes full width for consistency
+            >
+              Home
+            </Button>
+            <Button
+              leftIcon={<FaQuestionCircle />}
+              colorScheme={selectedModule === 'Flashcards' ? 'teal' : 'gray'}
+              onClick={() => setSelectedModule('Flashcards')}
+            >
+              Flashcards
+            </Button>
+            <Button
+              leftIcon={<FaLightbulb />}
+              colorScheme={selectedModule === 'Quiz' ? 'teal' : 'gray'}
+              onClick={() => setSelectedModule('Quiz')}
+            >
+              Quiz
+            </Button>
+            <Button
+              leftIcon={<FaBook />}
+              colorScheme={selectedModule === 'Example' ? 'teal' : 'gray'}
+              onClick={() => setSelectedModule('Example')}
+            >
+              Example
+            </Button>
+            <Button
+              leftIcon={<FaFileAlt />}
+              colorScheme={selectedModule === 'Summary' ? 'teal' : 'gray'}
+              onClick={() => setSelectedModule('Summary')}
+            >
+              Summary
+            </Button>
+          </VStack>
         </Box>
+
+        {/* Main Content Area (85% of the page width) */}
+        <Flex width="85%" direction="row">
+          {/* PDF Viewer (75% of Main Content) */}
+          <Box width="75%" position="relative">
+            {isClient ? (
+              <iframe
+                src="/pdfs/note.pdf"
+                width="100%"
+                height="100%"
+                style={{ border: 'none' }}
+              >
+                <p>
+                  Your browser does not support PDFs. Please download the PDF to view it:{' '}
+                  <a href="/pdfs/note.pdf">Download PDF</a>.
+                </p>
+              </iframe>
+            ) : (
+              <Flex
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                height="100%"
+              >
+                <Text>Loading PDF viewer...</Text> {/* Fallback content during SSR */}
+              </Flex>
+            )}
+          </Box>
+          {/* Module Box (25% of Main Content) */}
+          <Box
+            width="30%"
+            bg="gray.100"
+            p={4}
+            overflowY="auto" // Enable vertical scrolling if content overflows
+            minWidth="250px" // Minimum width to ensure readability
+            borderRight="1px"
+            borderColor="gray.300"
+          >
+            {renderModule()}
+          </Box>
+        </Flex>
       </Flex>
+
+      {/* Footer */}
+      <Box
+        width="100%"
+        bg="teal.500"
+        color="white"
+        p={4}
+        textAlign="center"
+      >
+        <Text>&copy; 2023 AI Powered LMS. All rights reserved.</Text>
+      </Box>
     </Flex>
   );
 }

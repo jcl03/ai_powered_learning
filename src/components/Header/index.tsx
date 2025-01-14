@@ -1,87 +1,54 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
+"use client";
+
+import { Box, Text, Flex } from "@chakra-ui/react";
+import { keyframes } from "@emotion/react";
+
+// Keyframes for a subtle fade-in animation
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 interface HeaderProps {
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
+  title: string;
+  subtitle?: string;
 }
 
-const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
+export default function Header({ title, subtitle }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
-      <div className="flex flex-grow items-center justify-between px-4 py-5 shadow-2 md:px-5 2xl:px-10">
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          {/* <!-- Hamburger Toggle BTN --> */}
-          <button
-            aria-controls="sidebar"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSidebarOpen(!sidebarOpen);
-            }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-dark-3 dark:bg-dark-2 lg:hidden"
+    <Box
+      w="100%"
+      bgGradient="linear(to-r, teal.500, blue.500)"
+      py={10}
+      px={6}
+      boxShadow="md"
+      textAlign="center"
+    >
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        animation={`${fadeIn} 0.8s ease-out`}
+      >
+        <Text
+          fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+          fontWeight="bold"
+          color="white"
+          bgClip="text"
+          lineHeight="tall"
+        >
+          {title}
+        </Text>
+        {subtitle && (
+          <Text
+            fontSize={{ base: "lg", md: "xl" }}
+            color="whiteAlpha.800"
+            mt={2}
           >
-            <span className="relative block h-5.5 w-5.5 cursor-pointer">
-              <span className="du-block absolute right-0 h-full w-full">
-                <span
-                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-[0] duration-200 ease-in-out dark:bg-white ${
-                    !sidebarOpen && "!w-full delay-300"
-                  }`}
-                ></span>
-                <span
-                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-150 duration-200 ease-in-out dark:bg-white ${
-                    !sidebarOpen && "delay-400 !w-full"
-                  }`}
-                ></span>
-                <span
-                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-dark delay-200 duration-200 ease-in-out dark:bg-white ${
-                    !sidebarOpen && "!w-full delay-500"
-                  }`}
-                ></span>
-              </span>
-              <span className="absolute right-0 h-full w-full rotate-45">
-                <span
-                  className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-dark delay-300 duration-200 ease-in-out dark:bg-white ${
-                    !sidebarOpen && "!h-0 !delay-[0]"
-                  }`}
-                ></span>
-                <span
-                  className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-dark duration-200 ease-in-out dark:bg-white ${
-                    !sidebarOpen && "!h-0 !delay-200"
-                  }`}
-                ></span>
-              </span>
-            </span>
-          </button>
-          {/* <!-- Hamburger Toggle BTN --> */}
-
-          <Link className="block flex-shrink-0 lg:hidden" href="/">
-            <Image
-              width={32}
-              height={32}
-              src={"/images/logo/logo-icon.svg"}
-              alt="AI Tutor Logo"
-            />
-          </Link>
-        </div>
-
-        <div className="hidden xl:block">
-          <div>
-            <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
-              AI Tutors
-            </h1>
-            <p className="font-medium">Empowering Learning with AI</p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-normal gap-2 2xsm:gap-4 lg:w-full lg:justify-between xl:w-auto xl:justify-normal">
-          <ul className="flex items-center gap-2 2xsm:gap-4">
-            {/* <!-- Additional components can be added here --> */}
-          </ul>
-        </div>
-      </div>
-    </header>
+            {subtitle}
+          </Text>
+        )}
+      </Flex>
+    </Box>
   );
-};
-
-export default Header;
+}
