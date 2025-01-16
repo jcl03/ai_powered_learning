@@ -4,11 +4,14 @@ import React from "react";
 import OverviewPanel from "../components/OverviewPanel";
 import Notifications from "../components/Notifications";
 import FileUploadPanel from "../components/Dashboard/upload";
+import Header from "../components/Header";
 
 export default function Home() {
   return (
     
     <DefaultLayout>
+      {/* Header */}
+      <Header />
       <div className="container mx-auto py-10">
         <div className="grid grid-cols-4 gap-3">
           {/* Left Column */}
