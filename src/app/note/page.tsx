@@ -16,10 +16,13 @@ import Flashcards from '../flashcards/page'; // Import the Flashcards component
 import Quiz from '../quiz/page'; // Import the Quiz component
 import Example from '../example/page'; // Import the Example component
 import Summary from '../summary/page'; // Import the Summary component
-import { FaHome, FaQuestionCircle, FaLightbulb, FaBook, FaFileAlt } from 'react-icons/fa'; // Import FontAwesome icons
+import Chat from '../chat/page'; // Import the Chat component
+import Footer from "../../components/Tutor/Footer";
+import Header from "../../components/Tutor/Header";
+import { FaHome, FaQuestionCircle, FaLightbulb, FaBook, FaFileAlt, FaComment} from 'react-icons/fa'; // Import FontAwesome icons
 
 // Define the type for module selection, including 'Home'
-type ModuleType = 'Home' | 'Flashcards' | 'Quiz' | 'Example' | 'Summary';
+type ModuleType = 'Home' | 'Flashcards' | 'Quiz' | 'Example' | 'Summary' | 'Chat';
 
 export default function NotePage() {
   const [isClient, setIsClient] = useState(false);
@@ -45,6 +48,8 @@ export default function NotePage() {
         return <Example />;
       case 'Summary':
         return <Summary />;
+      case 'Chat':
+        return <Chat />;
       default:
         return <Text>Module not found</Text>;
     }
@@ -53,14 +58,7 @@ export default function NotePage() {
   return (
     <Flex width="100%" height="100vh" direction="column">
       {/* Header */}
-      <Box
-        width="100%"
-        bgGradient="linear(to-r, teal.500, blue.500)"
-        p={4}
-        textAlign="center"
-      >
-        <Heading size="lg">AI Powered Learning Management System</Heading>
-      </Box>
+      <Header />
 
       {/* Main Content */}
       <Flex width="100%" height="calc(100vh - 120px)" direction="row">
@@ -115,6 +113,13 @@ export default function NotePage() {
             >
               Summary
             </Button>
+            <Button
+              leftIcon={<FaComment />}
+              colorScheme={selectedModule === 'Chat' ? 'teal' : 'gray'}
+              onClick={() => setSelectedModule('Chat')}
+            >
+              Chat
+            </Button>
           </VStack>
         </Box>
 
@@ -161,15 +166,7 @@ export default function NotePage() {
       </Flex>
 
       {/* Footer */}
-      <Box
-        width="100%"
-        bg="teal.500"
-        color="white"
-        p={4}
-        textAlign="center"
-      >
-        <Text>&copy; 2023 AI Powered LMS. All rights reserved.</Text>
-      </Box>
+      <Footer />
     </Flex>
   );
 }
