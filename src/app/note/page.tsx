@@ -26,7 +26,7 @@ type ModuleType = 'Home' | 'Flashcards' | 'Quiz' | 'Example' | 'Summary' | 'Chat
 
 export default function NotePage() {
   const [isClient, setIsClient] = useState(false);
-  const [selectedModule, setSelectedModule] = useState<ModuleType>('FLashcards');
+  const [selectedModule, setSelectedModule] = useState<ModuleType>('Quiz');
 
   useEffect(() => {
     setIsClient(true); // Set isClient to true after the component mounts on the client
