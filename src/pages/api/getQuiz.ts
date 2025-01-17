@@ -76,7 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   "correctAnswer": "A"
                 }
               ]
-            }`;
+            }
+              
+            return json only, no other format is accepted, do not start with any other text, only the json object.`;
         }
 
         // Add the user message to the thread
